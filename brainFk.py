@@ -43,6 +43,7 @@ class BrainFuckInterpreter:
                             if(inputData[i]=="]"): l+=1
                             elif(inputData[i]=="["): l-=1
                             i-=1
+        print("\n"+output)
 
 if __name__ == "__main__":
     BrainFuckInterpreter().interpret(input())
