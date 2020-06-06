@@ -27,12 +27,12 @@ class Chromosome:
             sys.exit()
 
     def crossover(self,p2):
-        p1,p2 = list(self.contents),list(p2)
+        p1,p2 = list(self.contents),list(p2.contents)
         if(len(p1)<len(p2)): while (len(p1)<len(p2)): p1.append(None)
         else: while(len(p2)<len(p2)): p2.append(None)
         currCrossover = False
         for i in range(len(p1)):
-            if(random()<0.1): currCrossover = not currCrossover
+            if(random.random()<0.1): currCrossover = not currCrossover
             if(currCrossover):
                 temp = p1[i]
                 p1[i] = p2[i]
@@ -43,7 +43,7 @@ class Chromosome:
     def mutate(self,mutateRate):
         output = list(self.contents)
         for i in range(len(output)):
-            k = random()
+            k = random.random()
             if(k<mutateRate): output[i] = random.choice(Chromosome.commands)
             elif(k>1-mutateRate):
                 if(k<1-(mutateRate/2)): output.insert(i,random.choice(Chromosome.commands))
@@ -66,7 +66,7 @@ class Population:
     def evolvePop(self):
         newPop = self.selectCrossover(self.percentCrossover)
         for i in newPop:
-            if (random()<mutateRate): i.mutate(mutateRate)
+            if (random.random()<self.mutateRate): i.mutate(self.mutateRate)
         self.popu = newPop
         self.popu.extend(Population.fillPop(len(popu),self.popSize,self.chromosomeLen))
 
@@ -74,21 +74,34 @@ class Population:
        sumFitness = sum([k.fitness for k in self.popu])
        boundsList = [0]
        boundsDict = {0:None}
-       for i in range(len(self.popu-1)):
+       for i in range(len(self.popu)-1):
            scaledFitness = self.popu[i].fitness/sumFitness
-           appendVal = boundsList[-1] + scaledFitness
+           appendVal = boundsList[-1] + round(scaledFitness,3)
            boundsList.append(appendVal)
            boundsDict[appendVal] = self.popu[i]
-        boundsList.append(100)
-        boundsDict[appendVal] = self.popu[-1]
-        newPop = []
-        noCrossover = int(len(self.popu)*self.percentCrossover)
-        if (noCrossover % 2 == 1): noCrossover-=1
-        for i in range(noCrossover):
-
-
-
-
+       boundsList.append(100)
+       boundsDict[appendVal] = self.popu[-1]
+       newPop = []
+       noCrossover = int(len(self.popu)*percentCrossover)
+       if (noCrossover % 2 == 1): noCrossover-=1
+       for i in range(noCrossover/2):
+           arrList = []
+           for k in range(2):
+               p = boundsList.copy()
+               leave = False
+               r = round(random.random()*100,5)
+               while(not leave):
+                   q = int((len(p)-1)/2)
+                   if(len(p)==2):
+                       arrList[k] = p[1]
+                       leave = True
+                   elif(r>p[q]):
+                       p = p[q:]
+                   elif(r<p[q]):
+                       p = p[0:q+1]
+           children = boundsDict[arrList[0]].crossover(boundsDict[arrList[1]])
+           newPop.extend(children)
+       return newPop
 
     @staticmethod
     def fillPop(currLen, reqLen, chromosomeMaxLength):
