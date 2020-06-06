@@ -65,6 +65,7 @@ class Population:
 
     def evolvePop(self):
         newPop = self.selectCrossover(self.percentCrossover)
+        newPop = self.removeUnInterpretable(newPop)
         for i in newPop:
             if (random.random()<self.mutateRate): i.mutate(self.mutateRate)
         self.popu = newPop
@@ -89,7 +90,7 @@ class Population:
            for k in range(2):
                p = boundsList.copy()
                leave = False
-               r = round(random.random()*100,5)
+               r = round(random.random(),5)
                while(not leave):
                    q = int((len(p)-1)/2)
                    if(len(p)==2):
@@ -101,6 +102,7 @@ class Population:
                        p = p[0:q+1]
            children = boundsDict[arrList[0]].crossover(boundsDict[arrList[1]])
            newPop.extend(children)
+           # Consider adding while loop to remove all uninterpretable chromosomes
        return newPop
 
     @staticmethod
