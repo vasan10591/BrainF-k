@@ -58,16 +58,17 @@ class Population:
         self.popSize = popSize
         self.mutateRate = mutateRate
         self.popu = []
+        self.popu.extend(Population.fillPop(len(popu),self.popSize,self.chromosomeLen))
         self.percentCrossover = oldPopPercentage # Percentage of population not randomised
         self.chromosomeLen = chromosomeLen # Maximum Chromosome Length
         self.target = target
 
     def evolvePop(self):
-        self.popu.extend(self.fillPop(len(popu),self.popSize,self.chromosomeLen))
         newPop = self.selectCrossover(self.percentCrossover)
         for i in newPop:
             if (random()<mutateRate): i.mutate(mutateRate)
         self.popu = newPop
+        self.popu.extend(Population.fillPop(len(popu),self.popSize,self.chromosomeLen))
 
    def selectCrossover(self,percentCrossover):
        sumFitness = sum([k.fitness for k in self.popu])
@@ -89,8 +90,8 @@ class Population:
 
 
 
-
-    def fillPop(self,currLen, reqLen, chromosomeMaxLength):
+    @staticmethod
+    def fillPop(currLen, reqLen, chromosomeMaxLength):
         appendTuple, contents = [], ""
         interpretable = False
         for i in range(reqLen-currLen):
